@@ -4,7 +4,7 @@ import { MdAdminPanelSettings } from "react-icons/md";
 import { IoCarSport } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import Car_Palace from "../assets/Car_Palace.png";
-
+import { FaAddressCard } from "react-icons/fa";
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -83,7 +83,7 @@ const Navbar = () => {
             className="flex items-center gap-x-1 hover:font-bold"
             onClick={handleLinkClick}
           >
-            <IoCarSport className="text-2xl" />
+            <FaAddressCard className="text-2xl" />
             About
           </Link>
         </div>
