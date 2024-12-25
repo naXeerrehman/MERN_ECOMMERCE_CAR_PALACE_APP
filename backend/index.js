@@ -6,7 +6,7 @@ import vehicleRoutes from "./routes/vehicleRoutes.js";
 import stripeRoutes from "./routes/stripeRoutes.js";
 import paypalRoutes from "./routes/paypalRoutes.js";
 import orderHistoryRoutes from "./routes/orderHistoryRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
+import adminStatsRoutes from "./routes/adminStatsRoutes.js";
 import couponRoutes from "./routes/CouponRoutes.js";
 import ReviewsRoutes from "./routes/ReviewsRoutes.js";
 import icon from "./routes/icon.js";
@@ -29,7 +29,7 @@ app.use("/api/paypal", paypalRoutes);
 
 app.use("/api/orders", orderHistoryRoutes);
 
-app.use("/api/admin", adminRoutes);
+app.use("/api/admin", adminStatsRoutes);
 
 app.use("/api", couponRoutes);
 
