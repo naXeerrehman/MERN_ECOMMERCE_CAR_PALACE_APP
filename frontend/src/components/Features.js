@@ -178,7 +178,7 @@ const Features = () => {
         //  for tablet
          md:w-[640px] md:ml-[100px] md:h-[180px]
         //  for laptop
-         lg:w-[900px] lg:ml-[340px]
+         lg:w-[900px] lg:ml-[340px] lg:h-[200px]
         "
         >
           <div className="lg:mr-0">
