@@ -1,0 +1,52 @@
+/* Loading animation */
+@keyframes zoomInOut {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(2); /* Zoom in */
+  }
+  100% {
+    transform: scale(1); /* Zoom out */
+  }
+}
+
+.animate-zoomInOut {
+  animation: zoomInOut 2s ease-in-out infinite;
+}
+
+/* Border animation */
+@keyframes gradient-border {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+.animate-gradient-border {
+  background-size: 200% 200%;
+  animation: gradient-border 3s infinite;
+  z-index: -1; /* Place the animated border behind the content */
+}
+
+/* Increase specificity for border for react quill*/
+.react-quill .ql-container {
+  border: none !important;
+}
+
+/* For removing space from the listed text in text editor(react_quill) */
+.text-editor .ql-editor {
+  padding-left: 3px !important; /* Remove padding for lists */
+}
+.text-editor .ql-editor ul,
+.text-editor .ql-editor ol {
+  padding-left: 17px !important; /* Remove padding for lists */
+}
+.text-editor .ql-editor li {
+  padding-left: 0px !important; /* Remove padding for list items */
+}
+  
