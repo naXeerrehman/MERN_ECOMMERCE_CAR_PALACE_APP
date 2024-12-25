@@ -75,7 +75,7 @@ const UploadVehicle = () => {
 
         {message && (
           <div
-            className={`mb-4 text-lg ${
+            className={`mb-2 mt-2 border border-black px-2 rounded-md text-lg ${
               message.includes("successfully")
                 ? "text-green-500"
                 : "text-red-500"
@@ -171,7 +171,7 @@ const UploadVehicle = () => {
                     <img
                       src={URL.createObjectURL(image)}
                       alt={`image-${index}`}
-                      className="w-20 h-20 object-cover rounded-md"
+                      className="w-[160px] h-20 object-cover rounded-md"
                     />
                     <button
                       type="button"
