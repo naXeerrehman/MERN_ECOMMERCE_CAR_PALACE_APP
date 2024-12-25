@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cors from "cors";
-import vehicleRoutes from "./routes/vehicleRoutes.js";
+import vehicleCrudRoutes from "./routes/vehicleCrudRoutes.js";
 import stripeRoutes from "./routes/stripeRoutes.js";
 import paypalRoutes from "./routes/paypalRoutes.js";
 import orderHistoryRoutes from "./routes/orderHistoryRoutes.js";
@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Routes
-app.use("/api/vehicles", vehicleRoutes); // Route for vehicle management
+app.use("/api/vehicles", vehicleCrudRoutes); // Route for vehicle management
 
 app.use("/api/stripe", stripeRoutes);
 
