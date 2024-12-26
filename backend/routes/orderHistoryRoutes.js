@@ -4,7 +4,6 @@ import {
   getAllOrders,
   getOrderById,
   saveOrder,
-  updateOrderStatus,
   updateOrder,
 } from "../controllers/OrdersHistory.js";
 
@@ -22,8 +21,5 @@ router.get("/:id", getOrderById);
 router.post("/", saveOrder);
 
 router.patch("/api/orders/:id", updateOrderStatus);
-
-// Update order status
-router.patch("/:orderId", updateOrder);
 
 export default router;
