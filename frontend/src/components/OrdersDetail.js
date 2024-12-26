@@ -1,140 +1,100 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { downloadPDF } from "./PDF"; // Import the downloadPDF function
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCar } from "@fortawesome/free-solid-svg-icons";
-import TextEditor from "./TextEditor";
-const EditVehicle = () => {
-  const { vehicleId } = useParams();
-  const navigate = useNavigate(); // Navigate function for redirection
-  const [vehicle, setVehicle] = useState(null);
-  const [formData, setFormData] = useState({
-    type: "",
-    brand: "",
-    model: "",
-    price: "",
-    stock: "",
-    description: "",
-    images: [],
-  });
-  const [existingImages, setExistingImages] = useState([]);
+import { jwtDecode } from "jwt-decode";
+
+const OrdersDetail = () => {
+  const { orderId } = useParams();
+  const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [error, setError] = useState(null);
+  const [status, setStatus] = useState("");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
-  // Fetch vehicle details on mount
   useEffect(() => {
-    if (!vehicleId) {
-      setError("Vehicle ID is missing");
-      setLoading(false);
-      return;
-    }
-
-    const fetchVehicle = async () => {
+    const fetchOrderDetail = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/vehicles/${vehicleId}`
+        const response = await fetch(
+          `http://localhost:5000/api/orders/${orderId}`
         );
-        setVehicle(response.data);
-        setFormData({
-          type: response.data.type,
-          brand: response.data.brand,
-          model: response.data.model,
-          price: response.data.price,
-          stock: response.data.stock,
-          description: response.data.description,
-          images: [], // Reset file uploads
-        });
-        setExistingImages(response.data.imageUrls || []); // Save existing image URLs
-        setLoading(false);
-      } catch (err) {
-        setError("Error fetching vehicle details");
+        const data = await response.json();
+
+        if (data && data._id) {
+          setOrder(data);
+          setStatus(data.status); // Set initial status
+        } else {
+          setError("Invalid order data or order not found.");
+        }
+      } catch (error) {
+        setError("Failed to fetch order details");
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchVehicle();
-  }, [vehicleId]);
+    fetchOrderDetail();
+  }, [orderId]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  useEffect(() => {
+    console.log("Current status:", status); // Log the current status
+  }, [status]);
 
-  const handleImageChange = (e) => {
-    setFormData({ ...formData, images: [...e.target.files] });
-  };
 
-  const handleDescriptionChange = (value) => {
-    setFormData({ ...formData, description: value });
-  };
+    useEffect(() => {
+      const token = localStorage.getItem("token"); // Check if token exists for logged-in status
+  
+      if (token) {
+        setIsLoggedIn(true);
+        try {
+          const decodedToken = jwtDecode(token);
+          console.log("Decoded Token:", decodedToken); // Log the decoded token
+          setIsAdmin(decodedToken.isAdmin); // Assumes the token has 'isAdmin' property
+        } catch (error) {
+          console.error("Error decoding token:", error);
+        }
+      } else {
+        setIsLoggedIn(false);
+      }
+    }, []);
 
-  const handleRemoveExistingImage = (index) => {
-    const updatedExistingImages = [...existingImages];
-    updatedExistingImages.splice(index, 1);
-    setExistingImages(updatedExistingImages);
-  };
-
-  const handleRemoveNewImage = (index) => {
-    const updatedImages = [...formData.images];
-    updatedImages.splice(index, 1);
-    setFormData({ ...formData, images: updatedImages });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-
-    if (!vehicleId) {
-      setError("Vehicle ID is missing");
-      return;
-    }
+  const handleStatusChange = async (newStatus) => {
+    console.log("Changing status to:", newStatus);
 
     try {
-      const form = new FormData();
-
-      // Add form data fields
-      for (const key in formData) {
-        if (key === "images") {
-          // If new images are selected, add them
-          formData.images.forEach((file) => form.append("images", file));
-        } else {
-          form.append(key, formData[key]);
+      const response = await fetch(
+        `http://localhost:5000/api/orders/${orderId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
         }
-      }
-
-      // If no new images are selected, send the existing images
-      if (formData.images.length === 0) {
-        existingImages.forEach((image) => form.append("images", image));
-      }
-
-      // Include existing images to avoid losing them
-      form.append("existingImages", JSON.stringify(existingImages));
-
-      // Send the form data to the backend
-      const response = await axios.put(
-        `http://localhost:5000/api/vehicles/${vehicleId}`,
-        form,
-        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      setSuccess(response.data.message);
-      setVehicle(response.data.vehicle);
-
-      // Redirect to /Shop after 3 seconds
-      setTimeout(() => {
-        navigate("/Shop");
-      }, 3000);
-    } catch (err) {
-      setError(err.response?.data?.message || "Error updating vehicle");
+      if (response.ok) {
+        const updatedOrder = await response.json();
+        console.log("Updated order:", updatedOrder);
+        setOrder(updatedOrder); // Update the order in state
+        setStatus(updatedOrder.status); // Update the status in state
+      } else {
+        console.error("Failed to update status");
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
     }
   };
 
   if (loading)
     return (
       <>
-        <div className="p-4 lg:mt-[20px] lg:ml-[580px]">
+        <h2 className="text-2xl font-bold mb-4 bg-black text-white text-center w-[300px] rounded-md ml-[100px] mt-[50px]">
+          Order Details
+        </h2>
+        <div className="p-4 ml-[200px]">
           <FontAwesomeIcon
             icon={faCar}
             size="3x"
@@ -144,164 +104,121 @@ const EditVehicle = () => {
         </div>
       </>
     );
-  if (error) return <p>{error}</p>;
+
+  if (error) return <div>{error}</div>;
 
   return (
-    <div className="container mx-auto p-4">
-      <form
-        className="flex flex-col items-center w-full max-w-md mx-auto"
-        onSubmit={handleSubmit}
-      >
-        <h1 className="bg-black text-white w-full text-2xl rounded-sm p-2 font-semibold text-center">
-          Edit Vehicle
-        </h1>
-        {error && <p className="text-red-500">{error}</p>}
+    <div className="p-4 lg:w-[700px] mx-auto">
+      <h2 className="text-2xl font-bold mb-4 bg-black text-white text-center w-[300px] mx-auto rounded-md">
+        Order Details
+      </h2>
+      <div className="border border-gray-300 p-4">
+        <p>
+          <strong>Order ID:</strong> {order._id}
+        </p>
+        <p>
+          <strong>Total Cost:</strong> ${order.totalCost}
+        </p>
+        <p>
+          <strong>Payment Method:</strong> {order.paymentMethod}
+        </p>
+        <p>
+          <strong>Date:</strong> {new Date(order.date).toLocaleString()}
+        </p>
+        <p>
+          <strong>Shipping Address:</strong>{" "}
+          {order.shippingAddress || "Not Provided"}
+        </p>
+        <p>
+          <strong>Billing Address:</strong>{" "}
+          {order.billingAddress || "Not Provided"}
+        </p>
+      </div>
 
-        <div className="flex flex-col gap-y-4 w-full">
-          <div>
-            <label>Type</label>
-            <input
-              type="text"
-              name="type"
-              value={formData.type}
-              onChange={handleChange}
-              className="border border-gray-700 px-2 rounded-sm w-full py-1"
-              required
-            />
-          </div>
-
-          <div>
-            <label>Model</label>
-            <input
-              type="text"
-              name="model"
-              value={formData.model}
-              onChange={handleChange}
-              className="border border-gray-700 px-2 rounded-sm w-full py-1"
-              required
-            />
-          </div>
-
-          <div>
-            <label>Brand</label>
-            <input
-              type="text"
-              name="brand"
-              value={formData.brand}
-              onChange={handleChange}
-              className="border border-gray-700 px-2 rounded-sm w-full py-1"
-              required
-            />
-          </div>
-
-          <div>
-            <label>Price</label>
-            <input
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              className="border border-gray-700 px-2 rounded-sm w-full py-1"
-              required
-            />
-          </div>
-
-          <div>
-            <label>Stock</label>
-            <input
-              type="number"
-              name="stock"
-              value={formData.stock}
-              onChange={handleChange}
-              className="border border-gray-700 px-2 rounded-sm w-full py-1"
-              required
-            />
-          </div>
-
-          <div>
-            <label>Description</label>
-            <TextEditor
-              value={formData.description}
-              onChange={handleDescriptionChange}
-              placeholder="Enter a detailed description for the vehicle"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label>Upload New Images</label>
-            <input
-              type="file"
-              name="images"
-              multiple
-              onChange={handleImageChange}
-            />
-          </div>
-
-          {existingImages.length > 0 && (
-            <div className="mt-4">
-              <h2 className="text-xl">Existing Images:</h2>
-              <div className="flex flex-wrap gap-4 mt-2">
-                {existingImages.map((image, index) => (
-                  <div key={index} className="relative">
+      {/* Items Table */}
+      <div className="mt-5">
+        <table className="table-auto border-collapse border border-gray-300 w-full">
+          <thead>
+            <tr className="bg-black text-white">
+              <th className="border border-gray-300 px-4 py-2">#</th>
+              <th className="border border-gray-300 px-4 py-2">Image</th>
+              <th className="border border-gray-300 px-4 py-2">Model</th>
+              <th className="border border-gray-300 px-4 py-2">Price</th>
+              <th className="border border-gray-300 px-4 py-2">Quantity</th>
+              <th className="border border-gray-300 px-4 py-2">Review</th>
+            </tr>
+          </thead>
+          <tbody>
+            {order.cartItems.map((item, index) => (
+              <tr key={item._id} className="text-center">
+                <td className="border border-gray-300 px-4 py-2">
+                  {index + 1}
+                </td>
+                <td className="border border-gray-300 py-2">
+                  {item.imageUrls && item.imageUrls.length > 0 ? (
                     <img
-                      src={image}
-                      alt={`existing-image-${index}`}
-                      className="w-[170px] h-20 rounded-md"
+                      src={item.imageUrls[0]}
+                      alt={item.model}
+                      className="w-[200px] h-[90px] mx-auto"
                     />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveExistingImage(index)}
-                      className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
-                    >
-                      x
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {formData.images.length > 0 && (
-            <div className="mt-4">
-              <h2 className="text-xl">New Images:</h2>
-              <div className="flex flex-wrap gap-4 mt-2">
-                {formData.images.map((image, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={URL.createObjectURL(image)}
-                      alt={`new-image-${index}`}
-                      className="w-[170px] h-20 rounded-md"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveNewImage(index)}
-                      className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
-                    >
-                      x
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          {success && (
-            <p className="text-green-500 text-center font-semibold border border-black mt-2 w-[300px] rounded-md ">
-              {success}
-            </p>
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            className={`bg-black text-white w-full rounded-sm text-lg p-2 font-semibold ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+                  ) : (
+                    <div className="w-20 h-20 bg-gray-200 flex items-center justify-center mx-auto">
+                      No Image
+                    </div>
+                  )}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {item.model}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  ${item.price}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {item.quantity}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  <Link
+                    to={`/Reviews/${item._id}`} // Navigate to the comments page for the item
+                    className="text-black font-semibold hover:underline"
+                  >
+                    Review
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {isLoggedIn && isAdmin && (
+        <div className="mt-4">
+          <label htmlFor="status" className="font-bold">
+            Order Status:
+          </label>
+          <select
+            id="status"
+            value={status} // Controlled by the status state
+            onChange={(e) => {
+              const newStatus = e.target.value;
+              console.log("New status selected:", newStatus); // Debug
+              handleStatusChange(newStatus);
+            }}
+            className="border border-gray-300 px-2 py-1 ml-2"
           >
-            {loading ? "Updating..." : "Edit Vehicle"}
-          </button>
+            <option value="Placed">Placed</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+          </select>
         </div>
-      </form>
+        )}
+        {/* Download PDF Button */}
+        <button
+          onClick={() => downloadPDF(order)} // Call the downloadPDF function when clicked
+          className="mt-4 px-6 py-2 bg-blue-500 text-white font-bold rounded"
+        >
+          Download The Invoice
+        </button>
+      </div>
     </div>
   );
 };
 
-export default EditVehicle;
+export default OrdersDetail;
