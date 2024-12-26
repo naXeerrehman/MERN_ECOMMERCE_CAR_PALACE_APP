@@ -69,7 +69,7 @@ const UploadVehicle = () => {
         className="flex flex-col items-center w-full max-w-md mx-auto"
         onSubmit={handleSubmit}
       >
-        <h1 className="bg-black text-gray-400 w-full text-2xl rounded-sm p-2 font-semibold text-center">
+        <h1 className="bg-black text-white w-full text-2xl rounded-sm p-2 font-semibold text-center">
           Upload Vehicle
         </h1>
 
@@ -189,7 +189,7 @@ const UploadVehicle = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`bg-black text-gray-400 w-full rounded-sm text-lg p-2 font-semibold ${
+            className={`bg-black text-white w-full rounded-sm text-lg p-2 font-semibold ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
