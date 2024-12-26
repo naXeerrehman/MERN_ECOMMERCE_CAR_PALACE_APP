@@ -134,7 +134,7 @@ const EditVehicle = () => {
   if (loading)
     return (
       <>
-        <div className="p-4 ml-[210px]">
+        <div className="p-4 lg:mt-[20px] lg:ml-[580px]">
           <FontAwesomeIcon
             icon={faCar}
             size="3x"
@@ -155,12 +155,6 @@ const EditVehicle = () => {
         <h1 className="bg-black text-white w-full text-2xl rounded-sm p-2 font-semibold text-center">
           Edit Vehicle
         </h1>
-
-        {success && (
-          <p className="text-green-500 text-center font-semibold border border-black mt-2 w-[300px] rounded-md ">
-            {success}
-          </p>
-        )}
         {error && <p className="text-red-500">{error}</p>}
 
         <div className="flex flex-col gap-y-4 w-full">
@@ -226,7 +220,7 @@ const EditVehicle = () => {
 
           <div>
             <label>Description</label>
-             <TextEditor
+            <TextEditor
               value={formData.description}
               onChange={handleDescriptionChange}
               placeholder="Enter a detailed description for the vehicle"
@@ -290,7 +284,11 @@ const EditVehicle = () => {
               </div>
             </div>
           )}
-
+          {success && (
+            <p className="text-green-500 text-center font-semibold border border-black mt-2 w-[300px] rounded-md ">
+              {success}
+            </p>
+          )}
           <button
             type="submit"
             disabled={loading}
