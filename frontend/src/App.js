@@ -27,7 +27,7 @@ import Features from "./components/Features.js";
 import Banner from "./components/Banner.js";
 import CTA from "./components/CTA.js";
 import About from "./components/About.js";
-import IconManagement from "./components/IconManagement.js";
+import SocialMediaIconManagement from "./components/SocialMediaIconManagement.js";
 import TextEditor from "./components/TextEditor.js";
 
 const App = () => {
@@ -68,7 +68,7 @@ const App = () => {
         {/* <Route path="/Banner" element={<Banner />} /> */}
         {/* <Route path="/CTA" element={<CTA />} /> */}
         <Route path="/About" element={<About />} />
-        <Route path="/IconManagement" element={<IconManagement />} />
+        <Route path="/SocialMediaIconManagement" element={<SocialMediaIconManagement />} />
         <Route path="/TextEditor" element={<TextEditor />} />
       </Routes>
     </div>
