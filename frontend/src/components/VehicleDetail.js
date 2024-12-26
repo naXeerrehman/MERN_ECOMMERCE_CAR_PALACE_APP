@@ -132,12 +132,7 @@ const VehicleDetail = () => {
       }
     }
   };
-
-  // Check if the vehicle is already in the cart and if the quantity matches the stock
-  const isItemInCart = cartItems.some(
-    (item) => item._id === vehicle?._id && item.quantity === vehicle.stock
-  );
-
+  
   if (!vehicle) {
     return (
       <div className="flex flex-col justify-center items-center mt-5">
