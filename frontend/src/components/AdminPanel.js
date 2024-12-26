@@ -7,7 +7,7 @@ import OrdersHistory from "./OrdersHistory";
 import CategoryManager from "./CategoryManager";
 import AllProducts from "./AllProducts";
 import CouponManager from "./CouponManager";
-import IconManagement from "./IconManagement";
+import SocialMediaIconManagement from "./SocialMediaIconManagement";
 
 const AdminPanel = () => {
   const [activeComponent, setActiveComponent] = useState("Home");
@@ -20,7 +20,7 @@ const AdminPanel = () => {
     CategoryManager: <CategoryManager />,
     AllProducts: <AllProducts />,
     CouponManager: <CouponManager />,
-    IconManagement: <IconManagement />,
+    SocialMediaIconManagement: <SocialMediaIconManagement />,
   };
 
   return (
@@ -100,9 +100,9 @@ const AdminPanel = () => {
               Coupon Manager
             </button>
             <button
-              onClick={() => setActiveComponent("IconManagement")}
+              onClick={() => setActiveComponent("SocialMediaIconManagement")}
               className={`border border-black mt-1 px-2 w-[340px] py-2 ${
-                activeComponent === "IconManagement"
+                activeComponent === "SocialMediaIconManagement"
                   ? "border-r-4 border-black font-semibold"
                   : ""
               }`}
