@@ -114,7 +114,7 @@ const AboutPage = () => {
         </section>
 
         {/* Icons Section */}
-        <section className="w-full bg-yellow-500 p-2 rounded-md">
+  <section className="w-full bg-yellow-500 p-2 rounded-md">
           <h2 className="text-3xl font-bold">Contact Us</h2>
           {isLoading ? (
             <div className="flex flex-col justify-center items-center mt-5">
@@ -210,6 +210,16 @@ const AboutPage = () => {
               ))}
             </div>
           )}
+          <p>
+            <span
+              className="font-bold
+          "
+            >
+              Pro tip:
+            </span>
+            To add Whataspp number, replace your number here
+            "https://wa.me/0123456789" and add in the link.
+          </p>
         </section>
       </div>
     </div>
