@@ -128,23 +128,22 @@ export const saveOrder = async (
 };
 
 export const updateOrderStatus = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
+  const { orderId } = req.params;
+  const { status } = req.body;
 
+  try {
     const updatedOrder = await Order.findByIdAndUpdate(
-      id,
+      orderId,
       { status },
-      { new: true } // Return updated order
+      { new: true } // Returns the updated order
     );
 
     if (!updatedOrder) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    res.status(200).json(updatedOrder);
+    res.json(updatedOrder);
   } catch (error) {
-    console.error("Failed to update order status:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Failed to update order status", error });
   }
 };
