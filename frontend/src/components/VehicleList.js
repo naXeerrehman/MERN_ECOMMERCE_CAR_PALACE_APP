@@ -286,9 +286,11 @@ const VehicleList = () => {
                         ({vehicleReviews.length})
                       </span>
                     </div>
-                    <h3 className="text-xl">{vehicle.model}</h3>
+                    <div className="flex gap-x-2 items-center">
+                      <p className="text-xl">{vehicle.model}</p>
+                      <p className="mt-[3px]">Price: ${vehicle.price}</p>
+                    </div>
                   </Link>
-                  <p className="mb-1">Price: ${vehicle.price}</p>
                   <div>
                     {cartItems.find((item) => item._id === vehicle._id)
                       ?.quantity >= vehicle.stock ? (
