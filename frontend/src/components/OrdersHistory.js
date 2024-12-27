@@ -79,6 +79,7 @@ const OrdersHistory = () => {
           <h2 className="text-2xl font-bold mb-4 bg-black text-white text-center rounded-md py-2">
             Order History
           </h2>
+          <h1 className="text-center mb-1 font-bold">Click on the row to view the order details.</h1>
           <table className="table-auto w-full border-collapse border border-gray-300">
             <thead>
               <tr className="bg-black text-white">
