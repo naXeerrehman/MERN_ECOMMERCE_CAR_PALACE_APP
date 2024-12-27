@@ -72,19 +72,6 @@ const UploadVehicle = () => {
         <h1 className="bg-black text-white w-full text-2xl rounded-sm p-2 font-semibold text-center">
           Upload Vehicle
         </h1>
-
-        {message && (
-          <div
-            className={`mb-2 mt-2 border border-black px-2 rounded-md text-lg ${
-              message.includes("successfully")
-                ? "text-green-500"
-                : "text-red-500"
-            }`}
-          >
-            {message}
-          </div>
-        )}
-
         <div className="flex flex-col gap-y-4 w-full">
           <div>
             <label>Type</label>
@@ -185,11 +172,24 @@ const UploadVehicle = () => {
               </div>
             </div>
           )}
-
+          {message && (
+            <div
+              className={`mb-2 mt-2 border border-black px-2 rounded-md text-lg ${
+                message.includes("successfully")
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
+            >
+              {message}
+            </div>
+          )}
+          <p className="relative bottom-[10px] font-bold">
+            Image of h-260px and w-510px makes better UI
+          </p>
           <button
             type="submit"
             disabled={loading}
-            className={`bg-black text-white w-full rounded-sm text-lg p-2 font-semibold ${
+            className={`bg-black text-white w-full rounded-sm text-lg p-2 font-semibold relative bottom-[20px]${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
