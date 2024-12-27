@@ -289,10 +289,13 @@ const EditVehicle = () => {
               {success}
             </p>
           )}
+           <p className="relative bottom-[10px] font-bold">
+            Image of h-260px and w-510px makes better UI
+          </p>
           <button
             type="submit"
             disabled={loading}
-            className={`bg-black text-white w-full rounded-sm text-lg p-2 font-semibold ${
+            className={`bg-black text-white w-full rounded-sm text-lg p-2 font-semibold relative bottom-[20px]${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
