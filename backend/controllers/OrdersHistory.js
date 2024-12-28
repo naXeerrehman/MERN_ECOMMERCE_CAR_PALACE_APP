@@ -85,47 +85,40 @@ export const getOrderById = async (req, res) => {
   }
 };
 
-export const saveOrder = async (
-  cartItems,
-  totalCost,
-  paymentMethod,
-  paymentStatus,
-  setRefreshOrders
-) => {
-  const orderDetails = {
+export const saveOrder = async (req, res) => {
+  const {
+    transactionDetails,
     cartItems,
-    totalCost,
-    date: new Date(),
-    status: "Placed",
+    discount,
     paymentMethod,
-    paymentStatus,
-  };
+    totalCost,
+    shippingAddress,
+    billingAddress,
+    email,
+  } = req.body;
 
   try {
-    const response = await fetch("http://localhost:5000/api/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(orderDetails),
+    // Create a new order
+    const newOrder = new Order({
+      transactionDetails,
+      cartItems,
+      discount,
+      paymentMethod,
+      totalCost,
+      email,
+      shippingAddress,
+      billingAddress,
     });
 
-    const savedOrder = await response.json();
-    console.log("Saved Order:", savedOrder);
+    // Save the order to the database
+    const savedOrder = await newOrder.save();
 
-    // Clear cart after successful order
-    setCartItems([]);
-    localStorage.removeItem("cartItems");
-
-    // Notify OrdersHistory to refresh
-    setRefreshOrders((prev) => !prev);
-
-    // Navigate to Orders page
-    navigate("/orders");
+    res.status(201).json({ order: savedOrder });
   } catch (error) {
-    console.error("Failed to save order", error);
+    console.error("Error saving order:", error);
+    res.status(500).json({ error: "Failed to save order" });
   }
-};
+}
 
 export const updateOrderStatus = async (req, res) => {
   const { orderId } = req.params;
