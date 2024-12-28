@@ -11,8 +11,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as faRegStar } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import "../App.css";
+import { jwtDecode } from "jwt-decode";
+import { GiShop } from "react-icons/gi";
+
 const VehicleList = () => {
   const [vehicles, setVehicles] = useState([]);
   const [brands, setBrands] = useState([]);
@@ -24,12 +26,14 @@ const VehicleList = () => {
   const [filterValue, setFilterValue] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [reviews, setReviews] = useState({});
-
   const [categories, setCategories] = useState(() => {
     const savedCategories = localStorage.getItem("categories");
     return savedCategories ? JSON.parse(savedCategories) : [];
   });
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const vehiclesPerPage = 6;
 
   const [cartItems, setCartItems] = useState(() => {
@@ -66,10 +70,16 @@ const VehicleList = () => {
   }, []);
 
   const handleAddToCart = (vehicle) => {
+    if (!isLoggedIn) {
+      setIsDialogOpen(true); // Show dialog if user is not logged in
+      return; // Exit the function early
+    }
+
     const existingItem = cartItems.find((item) => item._id === vehicle._id);
 
     // Check if the total quantity matches the stock
     if (existingItem && existingItem.quantity >= vehicle.stock) {
+      alert("Stock limit reached for this item."); // Optional: Show an alert or another message
       return; // Prevent adding more items
     }
 
@@ -89,6 +99,10 @@ const VehicleList = () => {
     localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
   };
 
+  const closeDialog = () => {
+    setIsDialogOpen(false); // Close the dialog
+  };
+
   const handleDeleteVehicle = async (vehicleId) => {
     try {
       await axios.delete(`http://localhost:5000/api/vehicles/${vehicleId}`);
@@ -103,8 +117,6 @@ const VehicleList = () => {
       console.error("Error deleting vehicle:", error);
     }
   };
-
-  const vehicleTypes = [...new Set(vehicles.map((vehicle) => vehicle.type))];
 
   const filteredVehicles = vehicles.filter((vehicle) => {
     const vehicleModel = vehicle.model || ""; // Default to empty string if null/undefined
@@ -171,6 +183,23 @@ const VehicleList = () => {
     vehicles.forEach((vehicle) => fetchReviews(vehicle._id));
   }, [vehicles]);
 
+  useEffect(() => {
+    const token = localStorage.getItem("token"); // Check if token exists for logged-in status
+
+    if (token) {
+      setIsLoggedIn(true);
+      try {
+        const decodedToken = jwtDecode(token);
+        console.log("Decoded Token:", decodedToken); // Log the decoded token
+        setIsAdmin(decodedToken.isAdmin); // Assumes the token has 'isAdmin' property
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, []);
+
   return (
     <div className="pt-3">
       {deleteSuccess && (
@@ -192,7 +221,7 @@ const VehicleList = () => {
       ) : (
         <>
           {/* Your normal component rendering (vehicles, filters, etc.) */}
-          <div className="flex justify-between items-center mb-4 w-[600px] lg:w-[850px] mx-auto">
+          <div className="flex justify-between items-center w-[600px] lg:w-[850px] mx-auto mb-1">
             <div className="flex space-x-4">
               <input
                 type="text"
@@ -242,9 +271,18 @@ const VehicleList = () => {
                   </span>
                 )}
               </Link>
+              {isLoggedIn && (
+                <Link
+                  to="/OrdersHistory"
+                  className="text-white bg-black px-4 py-2 rounded-md flex items-center space-x-2 relative"
+                >
+                  <GiShop />
+                  <span>Orders History</span>
+                </Link>
+              )}
             </div>
           </div>
-          {/* Your vehicle list grid and pagination */}
+       
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 w-[580px] lg:w-[850px] mx-auto">
             {currentVehicles.map((vehicle) => {
               const vehicleReviews = reviews[vehicle._id] || [];
@@ -308,25 +346,45 @@ const VehicleList = () => {
                         Add to Cart
                       </button>
                     )}
-                    <Link
-                      to={`/EditVehicle/${vehicle._id}`}
-                      className="bg-yellow-500 text-white px-4 py-1 rounded-md"
-                    >
-                      Edit
-                    </Link>
-                    <button
-                      onClick={() => handleDeleteVehicle(vehicle._id)}
-                      className="bg-red-500 text-white px-4 py-1 rounded-md ml-2"
-                    >
-                      Delete
-                    </button>
+                    {/* Dialog Box */}
+                    {isDialogOpen && (
+                      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white h-[70px] rounded shadow-lg text-center max-w-sm w-full">
+                          <p className="text-lg font-medium mt-[20px]">
+                            Please log in to add to cart
+                          </p>
+                          <button
+                            className="bg-red-500 hover:bg-red-600 text-white px-2 py-[2px] relative bottom-[40px] left-[170px] rounded"
+                            onClick={closeDialog}
+                          >
+                            x
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {isLoggedIn && isAdmin && (
+                      <>
+                        <Link
+                          to={`/EditVehicle/${vehicle._id}`}
+                          className="bg-yellow-500 text-white px-4 py-1 rounded-md"
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => handleDeleteVehicle(vehicle._id)}
+                          className="bg-red-500 text-white px-4 py-1 rounded-md ml-2"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               );
             })}
           </div>
-          ;{/* Pagination */}
-          <div className="flex justify-center mt-4">
+          {/* Pagination */}
+          <div className="flex justify-center mt-1">
             <button
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
