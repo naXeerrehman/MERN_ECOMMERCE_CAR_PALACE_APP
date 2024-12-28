@@ -132,7 +132,7 @@ const VehicleDetail = () => {
       }
     }
   };
-  
+
   if (!vehicle) {
     return (
       <div className="flex flex-col justify-center items-center mt-5">
@@ -342,61 +342,74 @@ const VehicleDetail = () => {
               </div>
             </div>
           </div>
-          {/* Reviews*/}
-          <div className="lg:w-[350px] mt-5 ml-[50px] w-[500px]">
-            <h3 className="text-xl font-semibold">Reviews</h3>
-            <div className="mt-2">
-              {loadingReviews ?(
-                      <div className="flex flex-col justify-center items-center mt-[50px]">
-                        <FontAwesomeIcon
-                          icon={faCar}
-                          size="3x"
-                          className="animate-zoomInOut" // Apply the animation class
-                        />
-                        <div className="font-bold ml-2 mt-2">Loading Reviews...</div>
-                      </div>
-                    )
-              : reviews.length > 0 ? (
-                displayedReviews.map((review, index) => (
-                  <div key={index} className="border p-2 my-2">
-                    <div className="flex mt-1">
-                      {Array.from({ length: 5 }, (_, i) => (
-                        <FontAwesomeIcon
-                          key={i}
-                          icon={i < review.rating ? faStar : faRegStar}
-                          className="text-yellow-500"
-                        />
-                      ))}
-                    </div>
-                    <div className="flex items-center">
-                      <h1>
-                        <strong>{review.userName}:</strong>
-                      </h1>
-                      <ReactQuill
-                        value={review.review || ""}
-                        readOnly={true}
-                        theme="snow"
-                        modules={{
-                          toolbar: false,
-                        }}
-                        className="w-[550px] lg:w-[480px] mx-auto react-quill mt-[5px] text-editor "
-                      />
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p>No reviews available.</p>
+        {/* Reviews*/}
+<div className="lg:w-[350px] mt-[40px] ml-[30px] w-[500px]">
+  <h3 className="text-xl font-semibold">Reviews</h3>
+  <div className="mt-2">
+    {loadingReviews ? (
+      <div className="flex flex-col justify-center items-center mt-[50px]">
+        <FontAwesomeIcon
+          icon={faCar}
+          size="3x"
+          className="animate-zoomInOut" // Apply the animation class
+        />
+        <div className="font-bold ml-2 mt-2">Loading Reviews...</div>
+      </div>
+    ) : reviews.length > 0 ? (
+      displayedReviews.map((review, index) => (
+        <div key={index} className="border p-2 my-2 w-full">
+          <div className="flex mt-1">
+            {Array.from({ length: 5 }, (_, i) => (
+              <FontAwesomeIcon
+                key={i}
+                icon={i < review.rating ? faStar : faRegStar}
+                className="text-yellow-500"
+              />
+            ))}
+          </div>
+          <div className="flex flex-col items-center">
+            <ReactQuill
+              value={review.review || ""}
+              readOnly={true}
+              theme="snow"
+              modules={{
+                toolbar: false,
+              }}
+              className="w-full mx-auto react-quill mt-[5px] text-editor"
+            />
+            {/* Display Review Creation Time */}
+            <div className="text-sm text-gray-500 -ml-[80px]">
+              {/* Format and display the review creation date */}
+              {review.createdAt && (
+                <span>
+                  Posted on:{" "}
+                  {new Date(review.createdAt).toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                  })}
+                </span>
               )}
             </div>
-            {reviews.length > 2 && (
-              <button
-                onClick={() => setShowAllReviews((prev) => !prev)}
-                className="px-4 py-2 rounded-md font-bold bg-black text-white"
-              >
-                {showAllReviews ? "See Less..." : "See More..."}
-              </button>
-            )}
           </div>
+        </div>
+      ))
+    ) : (
+      <p>No reviews available.</p>
+    )}
+  </div>
+  {reviews.length > 2 && (
+    <button
+      onClick={() => setShowAllReviews((prev) => !prev)}
+      className="px-4 py-2 rounded-md font-bold bg-black text-white"
+    >
+      {showAllReviews ? "See Less..." : "See More..."}
+    </button>
+  )}
+</div>
+
         </div>
 
         {/* Description */}
