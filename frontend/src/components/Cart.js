@@ -81,8 +81,8 @@ const Cart = () => {
         Cart
       </h2>
 
-      {couponMessage && (
-        <div className="bg-gray-600 text-white p-2 mb-4 rounded-md w-[400px] text-center mx-[40px]">
+     {couponMessage && (
+        <div className="border border-black font-bold p-2 mb-4 rounded-md w-[400px] text-center mx-[40px]">
           {couponMessage}
         </div>
       )}
