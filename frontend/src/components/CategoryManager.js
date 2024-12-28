@@ -8,8 +8,6 @@ const CategoryManager = ({
   const [editCategory, setEditCategory] = useState(null);
   const [editedLabel, setEditedLabel] = useState("");
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-
   const capitalizeFirstLetter = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   };
