@@ -1,20 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-const IconManager = () => {
+const SocialMediaIonManagement = () => {
   const [icons, setIcons] = useState([]);
   const [newIcon, setNewIcon] = useState({
-    name: "",
     image: null, // For image file
     link: "", // For link
   });
-  const [editingIcon, setEditingIcon] = useState(null); // For editing
-  const [loading, setLoading] = useState(true); // Track loading state
 
   const handleAddIcon = async () => {
     try {
       const formData = new FormData();
       formData.append("link", newIcon.link); // Add link
-      formData.append("image", newIcon.image);
+      formData.append("image", newIcon.image); // Add image
 
       const response = await fetch("http://localhost:5000/api/icons", {
         method: "POST",
@@ -25,31 +22,6 @@ const IconManager = () => {
       setNewIcon({ image: null, link: "" }); // Clear form
     } catch (error) {
       console.error("Failed to add icon", error);
-    }
-  };
-
-  const handleEditIcon = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("link", editingIcon.link); // Add link
-      formData.append("image", editingIcon.image);
-
-      const response = await fetch(
-        `http://localhost:5000/api/icons/${editingIcon._id}`,
-        {
-          method: "PUT",
-          body: formData,
-        }
-      );
-      const updatedIcon = await response.json();
-      setIcons((prevIcons) =>
-        prevIcons.map((icon) =>
-          icon._id === updatedIcon._id ? updatedIcon : icon
-        )
-      );
-      setEditingIcon(null); // Close edit mode
-    } catch (error) {
-      console.error("Failed to edit icon", error);
     }
   };
 
@@ -66,11 +38,9 @@ const IconManager = () => {
             id="icon-link"
             type="text"
             placeholder="Enter icon link"
-            value={editingIcon ? editingIcon.link : newIcon.link}
+            value={newIcon.link}
             onChange={(e) =>
-              editingIcon
-                ? setEditingIcon({ ...editingIcon, link: e.target.value })
-                : setNewIcon({ ...newIcon, link: e.target.value })
+              setNewIcon({ ...newIcon, link: e.target.value })
             }
             className="border p-2"
           />
@@ -84,32 +54,24 @@ const IconManager = () => {
             id="icon-image"
             type="file"
             accept="image/*"
-            onChange={(e) =>
-              editingIcon
-                ? setEditingIcon({ ...editingIcon, image: e.target.files[0] })
-                : setNewIcon({ ...newIcon, image: e.target.files[0] })
-            }
+            onChange={(e) => setNewIcon({ ...newIcon, image: e.target.files[0] })}
             className="border p-2"
           />
         </div>
 
         <button
-          onClick={editingIcon ? handleEditIcon : handleAddIcon}
+          onClick={handleAddIcon}
           className="bg-black text-white px-4 py-2 rounded-md"
         >
-          {editingIcon ? "Update Icon" : "Add Icon"}
+          Add Icon
         </button>
-        {editingIcon && (
-          <button
-            onClick={() => setEditingIcon(null)}
-            className="bg-red-500 text-white px-4 py-2 rounded-md ml-2"
-          >
-            Cancel
-          </button>
-        )}
+        <p>
+          <span className="font-bold">Pro tip:</span> To add a WhatsApp number,
+          replace your number here: "https://wa.me/0123456789" and add in the link.
+        </p>
       </div>
     </div>
   );
 };
 
-export default IconManager;
+export default SocialMediaIonManagement;
