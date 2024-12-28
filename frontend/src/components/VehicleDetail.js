@@ -165,7 +165,7 @@ const VehicleDetail = () => {
   };
 
   return (
-    <div className="container flex flex-col lg:mx-[50px] mt-5 p-4">
+    <div className="container flex flex-col lg:mx-[50px] mt-2 p-4">
       {/* Vehicle detail */}
       <h1 className="text-3xl ml-[200px] lg:ml-[430px] font-bold mb-3 bg-black text-white text-center w-[250px] rounded-md py-2">
         Vehicle Details
