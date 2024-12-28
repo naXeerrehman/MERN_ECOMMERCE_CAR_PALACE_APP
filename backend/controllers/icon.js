@@ -3,15 +3,14 @@ import Icon from "../models/Icon.js";
 
 // Configure Cloudinary (use your actual credentials here)
 cloudinary.config({
-  cloud_name: "dsvpstplx",
-  api_key: "255369348398518",
-  api_secret: "pcrGANnxW0Y_MFmyoC5YnkI7D8Y",
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret:process.env.CLOUDINARY_API_SECRET
 });
 
-// Create Icon
 const createIcon = async (req, res) => {
   try {
-    const { link } = req.body; // Get link and name from request body
+    const { link } = req.body; // Get link  from request body
     const image = req.file; // Image file from multer
 
     if (!link || !image) {
