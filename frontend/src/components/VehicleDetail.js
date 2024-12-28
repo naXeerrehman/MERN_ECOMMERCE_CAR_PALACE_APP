@@ -196,7 +196,7 @@ const VehicleDetail = () => {
         </div>
 
         {/* Vehicle detail */}
-        <div className="w-[300px] mx-[120px] lg:mx-0 mt-5">
+        <div className="w-[300px] mx-[120px] lg:mx-0 relative bottom-[40px]">
           <div className="flex items-center mt-5">
             {Array.from({ length: 5 }, (_, i) => (
               <FontAwesomeIcon
