@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import TextEditor from "./TextEditor";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const UploadVehicle = () => {
   const [type, setType] = useState("");
@@ -12,6 +13,8 @@ const UploadVehicle = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleFileChange = (e) => {
     setImages([...e.target.files]);
@@ -52,6 +55,11 @@ const UploadVehicle = () => {
       );
       console.log("Vehicle created:", response.data);
       setMessage("Vehicle created successfully!");
+
+      setTimeout(() => {
+        navigate("/Shop");
+      }, 2000);
+
       setLoading(false);
     } catch (error) {
       console.error(
@@ -174,7 +182,7 @@ const UploadVehicle = () => {
           )}
           {message && (
             <div
-              className={`mb-2 mt-2 border border-black px-2 rounded-md text-lg ${
+              className={`mb-2 mt-2 border border-black px-2 rounded-md text-lg text-center ${
                 message.includes("successfully")
                   ? "text-green-500"
                   : "text-red-500"
