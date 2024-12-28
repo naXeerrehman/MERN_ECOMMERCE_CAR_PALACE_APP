@@ -287,7 +287,7 @@ const VehicleList = () => {
                       </span>
                     </div>
                     <div className="flex gap-x-2 items-center">
-                      <p className="text-xl">{vehicle.model}</p>
+                      <p className="text-lg">{vehicle.model}</p>
                       <p className="mt-[3px]">Price: ${vehicle.price}</p>
                     </div>
                   </Link>
