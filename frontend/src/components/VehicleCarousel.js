@@ -1,230 +1,212 @@
-import React from "react";
-import Car from "../assets/Car.png";
-import Yamaha_MC from "../assets/Yamaha_MC.png";
-import Dollar from "../assets/Dollar.png";
-import Support from "../assets/Support.png";
-const Features = () => {
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { Link } from "react-router-dom";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCar } from "@fortawesome/free-solid-svg-icons";
+import "../App.css";
+
+const VehicleCarousel = () => {
+  const [vehicles, setVehicles] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [cartItems, setCartItems] = useState(() => {
+    const savedCartItems = localStorage.getItem("cartItems");
+    return savedCartItems ? JSON.parse(savedCartItems) : [];
+  });
+  useEffect(() => {
+    const fetchVehicles = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get("http://localhost:5000/api/vehicles");
+        setVehicles(response.data);
+      } catch (error) {
+        console.error("Error fetching vehicles:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchVehicles();
+  }, []);
+
+  // Custom arrows
+  const CustomPrevArrow = ({ onClick }) => (
+    <div
+      className="absolute border rounded-full bg-white cursor-pointer z-50
+      // for small mobile
+      xs:mt-[75px] xs:-left-[12px]
+      // for mobile
+      sm:bottom-[100px] sm:-left-[5px]
+      // for tablet
+      md:-ml-[30px]
+      lg:top-[15px] lg:py-1 lg:left-[20px] lg:text-2xl lg:w-[30px] lg:h-[30px]"
+      onClick={onClick}
+    >
+      <FaChevronLeft />
+    </div>
+  );
+
+  const CustomNextArrow = ({ onClick }) => (
+    <div
+      className="absolute border rounded-full shadow bg-white cursor-pointer z-10
+      xs:bottom-[105px] xs:left-[280px]
+      sm:left-[330px] sm:bottom-[100px] sm:w-[25px] sm:h-[25px] sm:px-1 sm:py-1 
+      md:ml-[375px] md:bottom-[105px] md:w-[40px]
+     lg:text-2xl lg:bottom-[110px] lg:left-[800px] lg:w-[30px] lg:h-[30px]"
+      onClick={onClick}
+    >
+      <FaChevronRight />
+    </div>
+  );
+
+  const settings = {
+    // dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3, // Default to 3 slides
+    slidesToScroll: 1,
+    nextArrow: <CustomNextArrow />,
+    prevArrow: <CustomPrevArrow />,
+    responsive: [
+      {
+        breakpoint: 768, // For small screens
+        settings: {
+          slidesToShow: 2, // Show 2 slides on small screens
+        },
+      },
+      {
+        breakpoint: 480, // For extra-small screens
+        settings: {
+          slidesToShow: 1, // Show 1 slide on extra-small screens
+        },
+      },
+    ],
+  };
+
+  const handleAddToCart = (vehicle) => {
+    const existingItem = cartItems.find((item) => item._id === vehicle._id);
+
+    // Check if the total quantity matches the stock
+    if (existingItem && existingItem.quantity >= vehicle.stock) {
+      return; // Prevent adding more items
+    }
+
+    let updatedCartItems;
+
+    if (existingItem) {
+      updatedCartItems = cartItems.map((item) =>
+        item._id === vehicle._id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    } else {
+      updatedCartItems = [...cartItems, { ...vehicle, quantity: 1 }];
+    }
+
+    setCartItems(updatedCartItems);
+    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+  };
+
   return (
-    <div>
-      {/* Features section */}
-      <div className=" mx-2 lg:mx-6  mt-[100px] flex flex-col gap-y-4 lg:w-[1200px]">
-
-        <div className="flex flex-col justify-between items-center bg-yellow-500 rounded-tr-[80px] rounded-bl-[80px]
-        // for small mobiles
-        xs:w-[300px] xs:ml-[0px] xs:h-[225px]
-        // for mobile
-         sm:w-[330px] sm:ml-[0px] sm:h-[190px]
-        //  for tablet
-         md:w-[600px] md:ml-[0px] md:h-[160px]
-        //  for laptop
-        lg:rounded-tr-[80px] lg:w-[900px] lg:ml-[0px] lg:h-[215px]
-        // for desktop
-         "
-        >
-          <div className="w-[250px] lg:mr-0">
-            <h1 className="text-2xl lg:mx-[30px] w-[300px] font-bold
-            // for small mobile
-            xs:-ml-[20px]
-            // for mobile
-             sm:-ml-[35px]
-            // for tablet
-            md:-ml-[160px] md:text-2xl
-            // for laptop
-            lg:-ml-[300px] lg:mt-[10px]
-             "
-            >
-              Quality Vehicles
-            </h1>
-            <h1
-              className="lg:text-2xl lg:mx-[30px] py-1 lg:w- [400px] 
-             // for small mobile
-             xs:-ml-[20px]
-             // for mobile
-            sm:-ml-[30px]
-              // for tablet
-           md:w-[400px] md:-ml-[160px]
-           lg:-ml-[300px] lg:w-[450px] lg:mt-[10px]
-            "
-            >
-              Explore our collection as we have the vehicles of the latest
-              Models and Brands with latest Technology that is maintainable,
-              affordable and long lasting!{" "}
-            </h1>
-          </div>
-          <div className="md:ml-[300px] lg:ml-0 ">
-            <img src={Car} alt="Car_image" className="
-            // for small mobile
-            xs:w-[140px] xs:ml-[170px] xs:bottom-[10px]
-            // for mobile
-            sm:h-[70px] sm:ml-[200px] relative sm:bottom-[35px]
-            // for tablet
-           md:relative md:bottom-[60px] md:ml-[170px] md:h-[100px]
-          //for laptop
-           lg:relative lg:bottom-[120px] lg:ml-[670px] lg:h-[140px] lg:w-[250px]
-            " />
-          </div>
+    <div className="mt-3 relative">
+      {isLoading ? (
+        <div className="flex flex-col justify-center items-center mt-[50px]">
+          <FontAwesomeIcon
+            icon={faCar}
+            size="3x"
+            className="animate-zoomInOut" // Apply the animation class
+          />
+          <div className="font-bold ml-2 mt-2">Loading...</div>
         </div>
+      ) : (
+        <>
+          <div
+            className="flex justify-between items-center relative top-5 w-[580px] 
+          // for small mobile
+          xs:w-[290px] xs:ml-[10px]
+          // for mobile
+          sm:w-[355px] sm:ml-[0px] sm:relative sm:top-[40px]
+          // for tablet
+         md:w-[700px] md:ml-[30px]
+           // for laptop
+          lg:w-[1110px] lg:ml-[80px] lg:text-2xl
+           "
+          >
+            <h1 className="font-semibold ml-[10px] mb-0">
+              Browse Our Collection
+            </h1>
+            <Link to="/Shop" className="font-semibold">
+              View All
+            </Link>
+          </div>
 
-        <div className="flex flex-col lg:flex-row justify-between items-center bg-yellow-500 rounded-tr-[80px] rounded-bl-[80px] lg:rounded-bl-[50px] lg:rounded-tr-[80px]
-          // for small mobiles
-        xs:w-[280px] xs:ml-[25px] xs:h-[200px]
-        // for mobile
-         sm:w-[310px] sm:ml-[50px]
-        //  for tablet
-         md:w-[640px] md:ml-[100px] md:h-[170px]
-        //  for laptop
-         lg:w-[900px] lg:ml-[340px]
-        "
-        >
-          <div className="lg:mr-0">
-            <h1
-              className="text-2xl font-bold
-              xs:ml-[8px]
-              sm:w-[300px] sm:ml-[20px]
-            md:mr-[310px]
-            lg:mx-[30px] ">
-              Affordable Prices
-            </h1>
-            <h1
-              className="lg:text-2xl lg:mx-[30px] py-1 
-            // for small mobile
-            xs:ml-[8px]
-            // for mobile
-            sm:w-[300px] sm:ml-[20px]
-            // for tablet
-            // md:mr-[100px]
-            //  for laptop
-           lg:w-[420px]
-             ">
-          Here you will avail you dream Car, Bike and Cycle which will durable, latest and worth to buy with very low and affordable price!
-            </h1>
-          </div>
-          <div className="">
-            <img
-              src={Dollar}
-              alt="Dollar_icon"
-              className="
-              // for small mobile
-              xs:relative xs:bottom-[5px] xs:ml-[190px] xs:w-[100px]
-              // for mobile
-              sm:w-[100px] sm:ml-[220px] relative sm:bottom-[10px] sm:right-[3px]
-              // for tablet
-              md:ml-[450px] md:w-[150px] md:relative md:bottom-[70px] md:left-[30px]
-              // for laptop
-              lg:w-[220px] lg:ml-[200px] lg:mt-[175px]"
-            />
-          </div>
-        </div>
+          <Slider
+            {...settings}
+            className="mt-[20px] border border-yellow-500
+            xs:w-[290px] xs:h-[210px] xs:ml-[20px] x
+            sm:w-[350px] sm:mt-[40px] sm:m-[10px]
+            md:w-[700px] md:ml-[35px]
+            lg:w-[1200px] lg:h-[225px] lg:ml-[40px]"
+          >
+            {vehicles.map((vehicle) => (
+              // Carousel Card
+              <div>
+                <Link to={`/vehicleDetail/${vehicle._id}`}>
+                  <img
+                    src={vehicle.imageUrls && vehicle.imageUrls[0]} // Access the first image URL
+                    alt={`${vehicle.model} - ${vehicle.brand}`}
+                    className="
+                        xs:w-[250px]
+                        md:w-[220px]
+                        lg:w-[290px] lg:h-[150px] object-cover rounded-md p-1 mx-auto                    "
+                  />
+                  <div
+                    className="flex justify-between
+                    mr-[10px]"
+                  >
+                    <h3
+                      className="text-lg mt-2 ml-[15px] w-[200px]
+                    lg:ml-[10px]"
+                    >
+                      {vehicle.model}
+                    </h3>
+                    <p className="text-lg mt-2 ml-[40px]">
+                      Price: ${vehicle.price}
+                    </p>
+                  </div>
+                </Link>
 
-        <div className="flex flex-col justify-between items-center bg-yellow-500 rounded-tr-[80px] rounded-bl-[80px]
-        // for small mobiles
-        xs:w-[300px] xs:ml-[0px] xs:h-[225px]
-        // for mobile
-         sm:w-[330px] sm:ml-[0px] sm:h-[190px]
-        //  for tablet
-         md:w-[600px] md:ml-[0px] md:h-[160px]
-        //  for laptop
-        lg:rounded-tr-[80px] lg:w-[900px] lg:ml-[0px] lg:h-[215px]
-        // for desktop
-         "
-        >
-          <div className="w-[250px] lg:mr-0">
-            <h1 className="text-2xl lg:mx-[30px] w-[300px] font-bold
-            // for small mobile
-            xs:-ml-[20px]
-            // for mobile
-             sm:-ml-[35px]
-            // for tablet
-            md:-ml-[160px] md:text-2xl
-            // for laptop
-            lg:-ml-[300px] lg:mt-[10px]
-             "
-            >
-              Support
-            </h1>
-            <h1
-              className="lg:text-2xl lg:mx-[30px] py-1 lg:w- [400px] 
-             // for small mobile
-             xs:-ml-[20px]
-             // for mobile
-            sm:-ml-[30px]
-              // for tablet
-           md:w-[400px] md:-ml-[160px]
-           lg:-ml-[300px] lg:w-[450px] lg:mt-[10px]
-            "
-            >
-             Our team is available for your support and quries regarding Prices, newest Models and Brands whether you are a new buyer or old client!
-            </h1>
-          </div>
-          <div className="md:ml-[300px] lg:ml-0 ">
-            <img src={Support} alt="Support_icon" className="
-            // for small mobile
-            xs:w-[110px] xs:ml-[200px] xs:bottom-[10px]
-            // for mobile
-            sm:h-[70px] sm:w-[90px] sm:ml-[250px] relative sm:bottom-[15px]
-            // for tablet
-           md:relative md:bottom-[80px] md:ml-[180px] md:h-[120px] md:w-[120px]
-          //for laptop
-           lg:relative lg:bottom-[120px] lg:ml-[670px] lg:h-[160px] lg:w-[250px]
-            " />
-          </div>
-        </div>
-
-        <div className="flex flex-col lg:flex-row justify-between items-center bg-yellow-500 rounded-tr-[80px] rounded-bl-[80px] lg:rounded-bl-[50px] lg:rounded-tr-[80px]
-          // for small mobiles
-        xs:w-[280px] xs:ml-[25px] xs:h-[200px]
-        // for mobile
-         sm:w-[310px] sm:ml-[50px]
-        //  for tablet
-         md:w-[640px] md:ml-[100px] md:h-[180px]
-        //  for laptop
-         lg:w-[900px] lg:ml-[340px] lg:h-[200px]
-        "
-        >
-          <div className="lg:mr-0">
-            <h1
-              className="text-2xl font-bold
-              xs:ml-[8px]
-              sm:w-[300px] sm:ml-[20px]
-            md:mr-[310px]
-            lg:mx-[30px] ">
-              Versatility
-            </h1>
-            <h1
-              className="lg:text-2xl lg:mx-[30px] py-1 
-            // for small mobile
-            xs:ml-[8px]
-            // for mobile
-            sm:w-[300px] sm:ml-[20px]
-            // for tablet
-            // md:mr-[100px]
-            //  for laptop
-           lg:w-[420px]
-             ">
-         Here is not only Cars but you can also avail Bikes and Cycles of every Model and Brand in suitable prices from lowest to highest with the discount and instalment!
-            </h1>
-          </div>
-          <div className="">
-            <img
-              src={Yamaha_MC}
-              alt="Bike_image"
-              className="
-              // for small mobile
-              xs:relative xs:bottom-[35px] xs:ml-[180px] xs:w-[100px]
-              // for mobile
-              sm:w-[100px] sm:ml-[200px] relative sm:bottom-[10px] sm:right-[3px]
-              // for tablet
-              md:ml-[450px] md:w-[170px] md:relative md:bottom-[100px] md:left-[1px]
-              // for laptop
-              lg:w-[190px] lg:ml-[80px] lg:mt-[250px] lg:
-              "
-            />
-          </div>
-        </div>
-
-      </div>
+                <div
+                  className="ml-[20px] xs:relative xs:bottom-[20px] right-[10px]
+                lg:bottom-[0px]"
+                >
+                  {cartItems.find((item) => item._id === vehicle._id)
+                    ?.quantity >= vehicle.stock ? (
+                    <button
+                      disabled
+                      className="bg-gray-400 text-white px-4 py-1 rounded-md cursor-not-allowed "
+                    >
+                      Out of Stock
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleAddToCart(vehicle)}
+                      className="bg-black text-white px-4 py-1 mr-2 rounded-md"
+                    >
+                      Add to Cart
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </Slider>
+        </>
+      )}
     </div>
   );
 };
 
-export default Features;
+export default VehicleCarousel;
